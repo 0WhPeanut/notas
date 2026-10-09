@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas notas</title>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>Minhas notas</h1>
+
+        <!-- Criar a entrada -->
+
+        <div class="entrada">
+
+            <input type="text" id="nota" placeholder="Digite uma nota...">
+
+            <button id="btnAdicionar">Adicionar</button>
+
+        </div>
+
+        <!-- Apresentar as notas -->
+
+        <ul id="listNotas"></ul>
+
+    </div>
+
+    <script>
+
+        // Elementos HTML
+
+        const listNotas = document.querySelector("#listNotas");
+        const campoNota = document.querySelector("#nota");
+        const btnAdicionar = document.querySelector("#btnAdicionar");
+
+        // Carregar notas do localStorage
+
+        let notas = JSON.parse(localStorage.getItem("notas")) || [];
+
+        // Apresentar as notas na tela
+
+        function mostrarNotas() {
+
+            listNotas.innerHTML = "";
+
+            notas.forEach((nota, index) => {
+
+                const li = document.createElement("li");
+
+                const texto = document.createElement("span");
+                texto.textContent = nota.texto;
+
+                // Marcar nota como concluída
+
+                if (nota.concluida) {
+                    texto.style.textDecoration = "line-through";
+                }
+
+                texto.addEventListener("click", () => {
+
+                    notas[index].concluida = !notas[index].concluida;
+
+                    salvarNotas();
+                    mostrarNotas();
+
+                });
+
+                // Botão excluir
+
+                const btnExcluir = document.createElement("button");
+
+                btnExcluir.textContent = "Excluir";
+
+                btnExcluir.addEventListener("click", () => {
+
+                    notas.splice(index, 1);
+
+                    salvarNotas();
+                    mostrarNotas();
+
+                });
+
+                li.appendChild(texto);
+                li.appendChild(btnExcluir);
+
+                listNotas.appendChild(li);
+
+            });
+
+        }
+
+        // Salvar notas
+
+        function salvarNotas() {
+
+            localStorage.setItem("notas", JSON.stringify(notas));
+
+        }
+
+        // Adicionar notas
+
+        function adicionarNota() {
+
+            const texto = campoNota.value.trim();
+
+            if (texto === "") {
+
+                alert("Digite alguma coisa!");
+                return;
+
+            }
+
+            const novaNota = {
+
+                texto: texto,
+                concluida: false
+
+            };
+
+            notas.push(novaNota);
+
+            salvarNotas();
+
+            campoNota.value = "";
+
+            mostrarNotas();
+
+        }
+
+        // Eventos
+
+        btnAdicionar.addEventListener("click", adicionarNota);
+
+
+        mostrarNotas();
+
+    </script>
+
+</body>
+
+</html>
